@@ -1,7 +1,7 @@
 class PrototypesController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
-  before_action :move_to_index, except: [:index, :show]
-  before_action :set_prototype, only: [:edit, :show]
+  before_action :set_prototype, only: [:edit, :show, :update, :destroy]
+  before_action :move_to_index, except: [:index, :new, :create, :show]
   
   def index
     @prototypes = Prototype.all
@@ -29,7 +29,6 @@ class PrototypesController < ApplicationController
   end
 
   def update
-    @prototype = Prototype.find(params[:id])
     if @prototype.update(prototype_params)
       redirect_to prototype_path
     else
@@ -38,7 +37,6 @@ class PrototypesController < ApplicationController
   end
 
   def destroy
-    prototype = Prototype.find(params[:id])
     if prototype.destroy
       redirect_to root_path
     end
@@ -54,7 +52,7 @@ class PrototypesController < ApplicationController
   end
 
   def move_to_index
-    unless user_signed_in? && current_user.name == @name
+    unless user_signed_in? && current_user.id == @prototype.user.id
       redirect_to action: :index
     end
   end
